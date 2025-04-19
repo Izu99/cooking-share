@@ -14,6 +14,8 @@ import CreateSkillPlanBox from "./CreateSkillPlanBox";
 import SkillPlanCard from "./SkillPlanCard";
 import FriendsSection from "./FriendsSection";
 import Notifications from "./Notifications";
+import LearningDashboard from "./LearningDashboard";
+import MyLearning from "./MyLearning";
 
 const CenterSection = () => {
   const snap = useSnapshot(state);
@@ -81,13 +83,13 @@ const CenterSection = () => {
       
       <div className="content-container">
         {snap.activeIndex === 1 && (
-          <div className="">
-            <div className="my_post">
+          <div className="feed-container">
+            <div className="my-post">
               <MyPost />
-            </div>
+            </div>           
             <div className="posts-list">
               {snap.posts.map((post, index) => (
-                <div className="friends_post" key={post.id || index}>
+                <div className="friends-post" key={post.id || index}>
                   <FriendsPost post={post} />
                 </div>
               ))}
@@ -118,18 +120,23 @@ const CenterSection = () => {
             )}
           </div>
         )}
-        
-        {snap.activeIndex === 3 && (
+         {snap.activeIndex === 3 && (
+          <div className="notifications-container">
+            <LearningDashboard />
+            <MyLearning /> {/* Add MyLearning here */}
+          </div>
+        )}      
+        {snap.activeIndex === 4 && (
           <div className="friends-container">
             <FriendsSection />
           </div>
         )}
         
-        {snap.activeIndex === 4 && (
+        {snap.activeIndex === 5 && (
           <div className="notifications-container">
             <Notifications />
           </div>
-        )}
+        )}      
       </div>
     </div>
   );

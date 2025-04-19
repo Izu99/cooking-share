@@ -25,13 +25,19 @@ import FriendProfileModal from "../Components/Modals/FriendProfileModal";
 import { message } from "antd";
 import LeftMenu from "../Components/Community/LeftMenu";
 
-// Import SkillPlan components
-import CreateSkillPlanModal from "../Components/Modals/CreateSkillPlanModal"; // SkillPlan modal for creating
-import UpdateSkillPlanModal from "../Components/Modals/UpdateSkillPlanModal"; // SkillPlan modal for updating
-import SkillPlanService from "../Services/SkillPlanService"; // SkillPlan service
+// SkillPlan Modals & Services
+import CreateSkillPlanModal from "../Components/Modals/CreateSkillPlanModal";
+import UpdateSkillPlanModal from "../Components/Modals/UpdateSkillPlanModal";
+import SkillPlanService from "../Services/SkillPlanService";
+
+// ✅ Learning Modals
+// import MyLearning from "../Components/Modals/MyLearning";
+import CreateLearningModal from "../Components/Modals/CreateLearningModal";
+import LearningDetailsModal from "../Components/Modals/LearningDetailsModal";
 
 const Community = () => {
   const snap = useSnapshot(state);
+
   const getWorkoutStories = async () => {
     try {
       const response = await WorkoutStoryService.getAllWorkoutStories();
@@ -50,20 +56,9 @@ const Community = () => {
     }
   };
 
-  
- 
-   
-    
-     
-   
-   
-   
-  
-
-  // Fetch SkillPlans
   const getSkillPlans = async () => {
     try {
-      const response = await SkillPlanService.getAllSkillPlans(); // Assuming this service exists
+      const response = await SkillPlanService.getAllSkillPlans();
       state.skillPlans = response;
     } catch (error) {
       console.log("Failed to fetch skill plans", error);
@@ -75,17 +70,16 @@ const Community = () => {
       UserService.getProfile()
         .then((response) => {
           state.currentUser = response;
-          message.success("Welcome ");
+          message.success("Welcome");
         })
-        .catch((err) => {
+        .catch(() => {
           message.error("Failed to fetch user profile");
         });
     }
+
     getAllUsers().then(() => {
-    
-     
-    
-      getSkillPlans(); // Fetch Skill Plans
+      getWorkoutStories();
+      getSkillPlans();
     });
   }, []);
 
@@ -108,23 +102,22 @@ const Community = () => {
         <LeftMenu />
         <CenterSection />
       </div>
-      
-      {/* Modals */}
+
+      {/* ✅ Modals */}
       <UserProfileModal />
       <CreateWorkoutStoryModal />
-    
       <CreateSkillPlanModal />
       {snap.selectedWorkoutStory && <WorkoutStory />}
       <CreatePostModal />
       {snap.selectedPost && <UploadPostModal />}
-      
-     
       {snap.selectedUserProfile && <FriendProfileModal />}
+      {snap.selectedSkillPlan && <CreateSkillPlanModal />}
+      {snap.selectedSkillPlanToUpdate && <UpdateSkillPlanModal />}
 
-      {snap.selectedSkillPlan && <CreateSkillPlanModal />} {/* Create SkillPlan */}
-
-      {/* SkillPlan Modals */}
-      {snap.selectedSkillPlanToUpdate && <UpdateSkillPlanModal />} {/* Edit SkillPlan */}
+      {/* ✅ Learning Modals */}
+      {/* <MyLearning /> */}
+      {snap.learningModalOpen && <CreateLearningModal />}
+      {snap.selectedLearning && <LearningDetailsModal />}
     </div>
   );
 };

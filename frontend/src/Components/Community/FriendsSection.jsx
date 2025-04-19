@@ -13,7 +13,6 @@ import {
   StarFilled,
   TeamOutlined
 } from '@ant-design/icons';
-// import "./FriendsSection.css";
 
 const FriendsSection = () => {
   const snap = useSnapshot(state);

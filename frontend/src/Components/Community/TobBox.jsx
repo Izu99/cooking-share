@@ -31,7 +31,7 @@ const TopBox = () => {
       <div className="topbox-title">Workout Stories</div>
       <div className="stories-container">
         <div
-          onClick={() => {
+          onClick={() => {   
             state.createWorkoutStatusModalOpened = true;
           }}
           className="my_story_card"

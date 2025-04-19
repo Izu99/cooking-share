@@ -219,7 +219,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="friends-post">
+    <div className="">
       <div className="post-header">
         <div className="user-info">
           <Avatar
