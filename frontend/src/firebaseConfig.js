@@ -2,17 +2,22 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
+
+// New Firebase Configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDapuYZ_8cJhXxrNd7V3rbcC1EQmAex7qU",
-  authDomain: "spm-project-cd3d5.firebaseapp.com",
-  projectId: "spm-project-cd3d5",
-  storageBucket: "spm-project-cd3d5.appspot.com",
-  messagingSenderId: "953427963506",
-  appId: "1:953427963506:web:45697c02fbf480a2409ceb",
+  apiKey: "AIzaSyDp_3snUH6scy4e0bzJHrgEhPFp_djL47M",
+  authDomain: "parabiz-store.firebaseapp.com",
+  projectId: "parabiz-store",
+  storageBucket: "parabiz-store.appspot.com",
+  messagingSenderId: "451395026600",
+  appId: "1:451395026600:web:3171da0218b2a52a1f4c9d",
+  measurementId: "G-3RH1QR0ZXL"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Export Firebase services
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);

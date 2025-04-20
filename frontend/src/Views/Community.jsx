@@ -32,8 +32,6 @@ import SkillPlanService from "../Services/SkillPlanService";
 
 // ✅ Learning Modals
 // import MyLearning from "../Components/Modals/MyLearning";
-import CreateLearningModal from "../Components/Modals/CreateLearningModal";
-import LearningDetailsModal from "../Components/Modals/LearningDetailsModal";
 
 const Community = () => {
   const snap = useSnapshot(state);
@@ -116,8 +114,6 @@ const Community = () => {
 
       {/* ✅ Learning Modals */}
       {/* <MyLearning /> */}
-      {snap.learningModalOpen && <CreateLearningModal />}
-      {snap.selectedLearning && <LearningDetailsModal />}
     </div>
   );
 };

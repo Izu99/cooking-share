@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Button, Select, DatePicker, Descriptions, message, Popconfirm } from "antd";
 import { useSnapshot } from "valtio";
 import state from "../../Utils/Store";
@@ -16,12 +16,19 @@ import {
 const { Option } = Select;
 const { TextArea } = Input;
 
-const LearningDetailsModal = () => {
+const LearningDetailsModal = ({ onRefresh }) => {
   const snap = useSnapshot(state);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const learning = snap.selectedLearning;
+  
+  // Reset editing state when modal opens or closes
+  useEffect(() => {
+    if (snap.learningDetailsModalOpened) {
+      setIsEditing(false);
+    }
+  }, [snap.learningDetailsModalOpened]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -55,6 +62,9 @@ const LearningDetailsModal = () => {
       message.success("Learning entry deleted successfully");
       state.learningDetailsModalOpened = false;
       state.selectedLearning = null;
+      
+      // Refresh dashboard data
+      if (onRefresh) onRefresh();
     } catch (error) {
       console.error("Failed to delete learning entry:", error);
       message.error("Failed to delete learning entry");
@@ -74,7 +84,8 @@ const LearningDetailsModal = () => {
       }
       
       const updatedLearning = {
-        ...values,
+        ...learning, // Keep original data
+        ...values,   // Override with new values
         userId: snap.currentUser.uid,
       };
       
@@ -89,6 +100,9 @@ const LearningDetailsModal = () => {
       
       message.success("Learning entry updated successfully");
       setIsEditing(false);
+      
+      // Refresh dashboard data
+      if (onRefresh) onRefresh();
     } catch (error) {
       console.error("Failed to update learning entry:", error);
       message.error("Failed to update learning entry");
@@ -341,6 +355,7 @@ const LearningDetailsModal = () => {
           <Select placeholder="Select status">
             <Option value="In Progress">In Progress</Option>
             <Option value="Completed">Completed</Option>
+            <Option value="On Hold">On Hold</Option>
             <Option value="Planned">Planned</Option>
           </Select>
         </Form.Item>
@@ -388,15 +403,18 @@ const LearningDetailsModal = () => {
     );
   };
 
+  const closeModal = () => {
+    state.learningDetailsModalOpened = false;
+    state.selectedLearning = null;
+    setIsEditing(false);
+    form.resetFields();
+  };
+
   return (
     <Modal
       title={getTemplateTitle()}
       open={snap.learningDetailsModalOpened}
-      onCancel={() => {
-        state.learningDetailsModalOpened = false;
-        state.selectedLearning = null;
-        setIsEditing(false);
-      }}
+      onCancel={closeModal}
       footer={null}
       width={700}
       destroyOnClose

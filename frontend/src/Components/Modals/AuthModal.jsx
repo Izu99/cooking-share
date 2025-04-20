@@ -1,6 +1,19 @@
 import React, { useState } from "react";
-import { Modal, Form, Input, Button, Upload, message, Divider, Space } from "antd";
-import { InboxOutlined, GoogleOutlined, GithubOutlined } from "@ant-design/icons";
+import {
+  Modal,
+  Form,
+  Input,
+  Button,
+  Upload,
+  message,
+  Divider,
+  Space,
+} from "antd";
+import {
+  InboxOutlined,
+  GoogleOutlined,
+  GithubOutlined,
+} from "@ant-design/icons";
 import UploadFileService from "../../Services/UploadFileService";
 import AuthService from "../../Services/AuthService";
 import UserService from "../../Services/UserService";
@@ -20,8 +33,10 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     try {
       setIsLoading(true);
       if (signinFocused) {
-        // Sign in using username instead of email
-        const response = await AuthService.login(values.username, values.password); 
+        const response = await AuthService.login(
+          values.username,
+          values.password
+        );
         localStorage.setItem("userId", response.userId);
         localStorage.setItem("accessToken", response.accessToken);
         message.success("Welcome back");
@@ -29,25 +44,31 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         onClose();
         form.resetFields();
       } else {
-        // Check if the username already exists
         const exists = await UserService.checkIfUserExists(values.username);
         if (exists) {
           message.error("User already exists with this username");
           return;
         } else {
-          const response = await AuthService.register(values.username, values.password);
+          const response = await AuthService.register(
+            values.username,
+            values.password
+          );
           localStorage.setItem("userId", response.userId);
           localStorage.setItem("accessToken", response.accessToken);
         }
 
         let imageUrl = "";
         if (values.file) {
-          imageUrl = await uploader.uploadFile(values.file[0].originFileObj, "userImages");
+          imageUrl = await uploader.uploadFile(
+            values.file[0].originFileObj,
+            "userImages"
+          );
         }
+
         const body = {
           userId: localStorage.getItem("userId"),
           image: imageUrl,
-          email: values.email, // Retaining email for registration, if needed
+          email: values.email,
         };
         await UserService.createProfile(body);
         message.success("Welcome " + values.username);
@@ -65,37 +86,29 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   };
 
   const handleOAuthLogin = (provider) => {
-    // Redirect to the OAuth2 endpoint
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   };
 
   const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
+    if (Array.isArray(e)) return e;
     return e && e.fileList;
   };
 
   return (
-    <Modal
-      title="Sign In or Sign Up"
-      open={isOpen}
-      footer={null}
-      onCancel={onClose}
-    >
+    <Modal title="Sign In or Sign Up" open={isOpen} footer={null} onCancel={onClose}>
       <div className="oauth-buttons" style={{ marginBottom: "20px" }}>
         <Space direction="vertical" style={{ width: "100%" }}>
-          <Button 
-            icon={<GoogleOutlined />} 
-            onClick={() => handleOAuthLogin("google")} 
+          <Button
+            icon={<GoogleOutlined />}
+            onClick={() => handleOAuthLogin("google")}
             block
             style={{ backgroundColor: "#4285F4", color: "white" }}
           >
             Continue with Google
           </Button>
-          <Button 
-            icon={<GithubOutlined />} 
-            onClick={() => handleOAuthLogin("github")} 
+          <Button
+            icon={<GithubOutlined />}
+            onClick={() => handleOAuthLogin("github")}
             block
           >
             Continue with GitHub
@@ -113,9 +126,9 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
         autoComplete="off"
       >
         <Form.Item
-          name="username" 
+          name="username"
           label="Username"
-          rules={[{ required: true, message: "Please input your Username!" }]} 
+          rules={[{ required: true, message: "Please input your Username!" }]}
         >
           <Input placeholder="Username" />
         </Form.Item>
@@ -130,6 +143,29 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
 
         {!signinFocused && (
           <>
+            <Form.Item shouldUpdate={(prev, curr) => prev.password !== curr.password}>
+              {({ getFieldValue }) => {
+                const password = getFieldValue("password") || "";
+                const rules = [
+                  { label: "At least 8 characters", valid: password.length >= 8 },
+                  { label: "At least 1 uppercase letter", valid: /[A-Z]/.test(password) },
+                  { label: "At least 1 lowercase letter", valid: /[a-z]/.test(password) },
+                  { label: "At least 1 number", valid: /\d/.test(password) },
+                  { label: "At least 1 special character", valid: /[!@#$%^&*]/.test(password) },
+                ];
+
+                return (
+                  <ul style={{ listStyle: "none", paddingLeft: 0, marginBottom: 16 }}>
+                    {rules.map((rule, idx) => (
+                      <li key={idx} style={{ color: rule.valid ? "green" : "gray" }}>
+                        {rule.label}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }}
+            </Form.Item>
+
             <Form.Item
               name="confirm"
               dependencies={["password"]}
@@ -146,9 +182,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error(
-                        "The two passwords that you entered do not match!"
-                      )
+                      new Error("The two passwords that you entered do not match!")
                     );
                   },
                 }),
@@ -156,6 +190,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
             >
               <Input.Password placeholder="Confirm Password" />
             </Form.Item>
+
             <Form.Item
               name="file"
               valuePropName="fileList"
@@ -180,7 +215,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
           </Button>
         </Form.Item>
         <Form.Item>
-          <Button type="link" onClick={toggleFocus}>
+          <Button type="link" onClick={toggleFocus} block>
             {signinFocused
               ? "Need an account? Sign up"
               : "Already have an account? Sign in"}

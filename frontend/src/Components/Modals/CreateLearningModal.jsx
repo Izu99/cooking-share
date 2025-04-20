@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Form, Input, Button, Select, DatePicker, message } from "antd";
 import { useSnapshot } from "valtio";
 import state from "../../Utils/Store";
@@ -8,11 +8,19 @@ import LearningService from "../../Services/LearningService";
 const { Option } = Select;
 const { TextArea } = Input;
 
-const CreateLearningModal = () => {
+const CreateLearningModal = ({ onRefresh }) => {
   const snap = useSnapshot(state);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [template, setTemplate] = useState("general");
+
+  // Reset form when modal opens
+  useEffect(() => {
+    if (snap.createLearningModalOpened) {
+      form.resetFields();
+      setTemplate("general");
+    }
+  }, [snap.createLearningModalOpened, form]);
 
   const handleSubmit = async () => {
     try {
@@ -55,6 +63,9 @@ const CreateLearningModal = () => {
       // Reset form and close modal
       form.resetFields();
       state.createLearningModalOpened = false;
+      
+      // Refresh stats without full page reload
+      if (onRefresh) onRefresh();
     } catch (error) {
       // Remove temp entry if failed
       if (state.learningEntries) {
@@ -71,7 +82,8 @@ const CreateLearningModal = () => {
 
   const handleTemplateChange = (value) => {
     setTemplate(value);
-    form.resetFields();
+    form.resetFields(['projectName', 'projectLink', 'certificationName', 'provider', 'dateObtained', 
+                     'challengeName', 'result', 'workshopName', 'duration']);
   };
 
   const renderTemplateFields = () => {
@@ -171,16 +183,19 @@ const CreateLearningModal = () => {
     }
   };
 
+  const closeModal = () => {
+    form.resetFields();
+    state.createLearningModalOpened = false;
+  };
+
   return (
     <Modal
       title="Track Learning Progress"
-      visible={state.createLearningModalOpened}
-      onCancel={() => {
-        form.resetFields();
-        state.createLearningModalOpened = false;
-      }}
+      open={snap.createLearningModalOpened}
+      onCancel={closeModal}
       footer={null}
       className="learning-modal"
+      destroyOnClose={true}
     >
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
@@ -226,6 +241,7 @@ const CreateLearningModal = () => {
           name="status"
           label="Status"
           rules={[{ required: true, message: "Please select status" }]}
+          initialValue="In Progress"
         >
           <Select>
             <Option value="In Progress">In Progress</Option>
@@ -259,6 +275,7 @@ const CreateLearningModal = () => {
             htmlType="submit"
             loading={loading}
             className="submit-button"
+            block
           >
             Save Learning Entry
           </Button>
