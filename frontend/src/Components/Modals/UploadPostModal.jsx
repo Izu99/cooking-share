@@ -32,7 +32,7 @@ const UploadPostModal = () => {
         mediaType: fileType,
       };
       await PostService.updatePost(selectedPost.id, body);
-      state.posts = await PostService.getPosts();
+      state.posts = (await PostService.getPosts()).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       state.updatePostModalOpened = false; // Close the modal after update
     } catch (error) {
       console.error("Failed to update post:", error);
@@ -96,11 +96,7 @@ const UploadPostModal = () => {
           <Input.TextArea />
         </Form.Item>
         {!imageUploading && (
-          <Form.Item
-            name="mediaLink"
-            label="Media Link"
-            rules={[{ required: true, message: "Please enter media link" }]}
-          >
+        <Form.Item name="mediaLink" label="Media Link">
             <Upload
               accept="image/*,video/*"
               onChange={handleFileChange}
